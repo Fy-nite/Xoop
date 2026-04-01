@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  animals.xoop — Full OOP demo for the XOOP compiler.
+
+  Demonstrates:
+    • Namespaces, using directives
+    • Interfaces
+    • Enums
+    • Abstract base classes with readonly fields
+    • Field-backed properties
+    • Inheritance with base(...) calls
+    • Virtual / override methods
+    • Abstract methods
+    • Static entry-point class
+-->
+<XoopProgram>
+
+  <Using namespace="System"/>
+  <Using namespace="System.Collections.Generic"/>
+
+  <Namespace name="AnimalKingdom">
+
+    <!-- ── Interface ──────────────────────────────────────────────────────── -->
+
+    <Interface name="ISpeakable">
+      <Method name="Speak"    returnType="void"/>
+      <Method name="GetSound" returnType="string"/>
+    </Interface>
+
+    <!-- ── Enum ───────────────────────────────────────────────────────────── -->
+
+    <Enum name="AnimalKind">
+      <Member name="Unknown" value="0"/>
+      <Member name="Dog"/>
+      <Member name="Cat"/>
+      <Member name="Bird"/>
+    </Enum>
+
+    <!-- ── Abstract base class ────────────────────────────────────────────── -->
+
+    <Class name="Animal" access="public" abstract="true" implements="ISpeakable">
+
+      <Field name="_name"  type="string" access="private"   readonly="true"/>
+      <Field name="_sound" type="string" access="protected"/>
+
+      <Constructor access="public">
+        <Parameter name="name"  type="string"/>
+        <Parameter name="sound" type="string"/>
+        <Body><![CDATA[
+          _name  = name;
+          _sound = sound;
+        ]]></Body>
+      </Constructor>
+
+      <!-- Read-only, field-backed property -->
+      <Property name="Name" type="string" access="public" fieldRef="_name" set="false"/>
+
+      <Method name="GetSound" returnType="string" access="public" virtual="true">
+        <Body><![CDATA[
+          return _sound;
+        ]]></Body>
+      </Method>
+
+      <Method name="Speak" returnType="void" access="public" virtual="true">
+        <Body><![CDATA[
+          Console.WriteLine($"{_name} says: {_sound}!");
+        ]]></Body>
+      </Method>
+
+      <!-- Each subclass must tell us what kind it is -->
+      <Method name="Kind" returnType="AnimalKind" access="public" abstract="true"/>
+
+      <Method name="ToString" returnType="string" access="public" override="true">
+        <Body><![CDATA[
+          return $"{Kind()} named '{_name}'";
+        ]]></Body>
+      </Method>
+
+    </Class>
+
+    <!-- ── Dog ────────────────────────────────────────────────────────────── -->
+
+    <Class name="Dog" access="public" extends="Animal">
+
+      <Constructor access="public">
+        <Parameter name="name" type="string"/>
+        <Base><Arg>name</Arg><Arg>"Woof"</Arg></Base>
+      </Constructor>
+
+      <Method name="Fetch" returnType="void" access="public">
+        <Body><![CDATA[
+          Console.WriteLine($"{Name} fetches the ball!");
+        ]]></Body>
+      </Method>
+
+      <Method name="Kind" returnType="AnimalKind" access="public" override="true">
+        <Body><![CDATA[
+          return AnimalKind.Dog;
+        ]]></Body>
+      </Method>
+
+    </Class>
+
+    <!-- ── Cat ────────────────────────────────────────────────────────────── -->
+
+    <Class name="Cat" access="public" extends="Animal">
+
+      <Constructor access="public">
+        <Parameter name="name" type="string"/>
+        <Base><Arg>name</Arg><Arg>"Meow"</Arg></Base>
+      </Constructor>
+
+      <Method name="Purr" returnType="void" access="public">
+        <Body><![CDATA[
+          Console.WriteLine($"{Name} purrs contentedly~");
+        ]]></Body>
+      </Method>
+
+      <Method name="Kind" returnType="AnimalKind" access="public" override="true">
+        <Body><![CDATA[
+          return AnimalKind.Cat;
+        ]]></Body>
+      </Method>
+
+    </Class>
+
+    <!-- ── Bird ───────────────────────────────────────────────────────────── -->
+
+    <Class name="Bird" access="public" extends="Animal">
+
+      <Field name="_canFly" type="bool" access="private" readonly="true"/>
+
+      <Constructor access="public">
+        <Parameter name="name"   type="string"/>
+        <Parameter name="canFly" type="bool" default="true"/>
+        <Base><Arg>name</Arg><Arg>"Tweet"</Arg></Base>
+        <Body><![CDATA[
+          _canFly = canFly;
+        ]]></Body>
+      </Constructor>
+
+      <Property name="CanFly" type="bool" access="public" fieldRef="_canFly" set="false"/>
+
+      <Method name="Kind" returnType="AnimalKind" access="public" override="true">
+        <Body><![CDATA[
+          return AnimalKind.Bird;
+        ]]></Body>
+      </Method>
+
+      <Method name="Speak" returnType="void" access="public" override="true">
+        <Body><![CDATA[
+          Console.Write($"{Name} chirps: Tweet!");
+          Console.WriteLine(CanFly ? "  *flutters away*" : "  (flightless)");
+        ]]></Body>
+      </Method>
+
+    </Class>
+
+    <!-- ── Entry point ────────────────────────────────────────────────────── -->
+
+    <Class name="Program" access="public" static="true">
+
+      <Method name="Main" returnType="void" access="public" static="true">
+        <Parameter name="args" type="string[]"/>
+        <Body><![CDATA[
+          var animals = new List<Animal>
+          {
+              new Dog("Rex"),
+              new Dog("Buddy"),
+              new Cat("Whiskers"),
+              new Bird("Tweety"),
+              new Bird("Penguin", false),
+          };
+
+          Console.WriteLine("=== Animal Kingdom ===");
+          foreach (var animal in animals)
+          {
+              animal.Speak();
+              Console.WriteLine($"   -> {animal}");
+          }
+
+          Console.WriteLine();
+          Console.WriteLine("=== Dog Tricks ===");
+          var dog = new Dog("Max");
+          dog.Speak();
+          dog.Fetch();
+
+          Console.WriteLine();
+          Console.WriteLine("=== Cat Corner ===");
+          var cat = new Cat("Luna");
+          cat.Speak();
+          cat.Purr();
+        ]]></Body>
+      </Method>
+
+    </Class>
+
+  </Namespace>
+
+</XoopProgram>

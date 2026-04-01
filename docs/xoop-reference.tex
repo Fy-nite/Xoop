@@ -1,0 +1,974 @@
+\documentclass[11pt,a4paper]{article}
+
+% ─── Packages ─────────────────────────────────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=2.4cm]{geometry}
+\usepackage{microtype}
+\usepackage{lmodern}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{parskip}
+\usepackage{fancyhdr}
+\usepackage{mdframed}
+\usepackage{enumitem}
+\usepackage{amsmath}
+
+% ─── Colours ──────────────────────────────────────────────────────────────────
+\definecolor{xoop-blue}    {HTML}{1565C0}
+\definecolor{xoop-green}   {HTML}{2E7D32}
+\definecolor{xoop-red}     {HTML}{B71C1C}
+\definecolor{xoop-gray}    {HTML}{546E7A}
+\definecolor{xoop-bg}      {HTML}{F5F7FA}
+\definecolor{xoop-border}  {HTML}{CFD8DC}
+\definecolor{xoop-comment} {HTML}{78909C}
+\definecolor{xoop-string}  {HTML}{388E3C}
+\definecolor{xoop-keyword} {HTML}{1565C0}
+\definecolor{xoop-attr}    {HTML}{6A1B9A}
+
+% ─── Listings style ───────────────────────────────────────────────────────────
+\lstdefinelanguage{xoop}{
+  morecomment=[s]{<!--}{-->},
+  morestring=[b]",
+  sensitive=false,
+  morekeywords={
+    XoopProgram, Using, Namespace, Class, Interface, Enum,
+    Field, Property, Constructor, Method, Parameter, Get, Set,
+    Body, Member, Base, This, Arg
+  },
+}
+
+\lstdefinestyle{xoopstyle}{
+  language=xoop,
+  backgroundcolor=\color{xoop-bg},
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{xoop-keyword}\bfseries,
+  stringstyle=\color{xoop-string},
+  commentstyle=\color{xoop-comment}\itshape,
+  identifierstyle=\color{xoop-attr},
+  breaklines=true,
+  breakatwhitespace=true,
+  showstringspaces=false,
+  tabsize=2,
+  frame=single,
+  rulecolor=\color{xoop-border},
+  framesep=4pt,
+  xleftmargin=8pt,
+  xrightmargin=4pt,
+  numbers=left,
+  numberstyle=\tiny\color{xoop-gray},
+  numbersep=8pt,
+  captionpos=b,
+}
+
+\lstdefinestyle{csstyle}{
+  language={[Sharp]C},
+  backgroundcolor=\color{xoop-bg},
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{xoop-keyword}\bfseries,
+  stringstyle=\color{xoop-string},
+  commentstyle=\color{xoop-comment}\itshape,
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=4,
+  frame=single,
+  rulecolor=\color{xoop-border},
+  framesep=4pt,
+  xleftmargin=8pt,
+  xrightmargin=4pt,
+  numbers=left,
+  numberstyle=\tiny\color{xoop-gray},
+  numbersep=8pt,
+  captionpos=b,
+}
+
+\lstset{style=xoopstyle}
+
+% ─── Section formatting ───────────────────────────────────────────────────────
+\titleformat{\section}{\Large\bfseries\color{xoop-blue}}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\large\bfseries\color{xoop-gray}}{}{0em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries}{}{0em}{}
+
+% ─── Header / footer ─────────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{\small\textcolor{xoop-gray}{XOOP Language Reference}}
+\fancyhead[R]{\small\textcolor{xoop-gray}{v1.0.0}}
+\fancyfoot[C]{\small\thepage}
+
+% ─── Hyperref ─────────────────────────────────────────────────────────────────
+\hypersetup{
+  colorlinks=true,
+  linkcolor=xoop-blue,
+  urlcolor=xoop-blue,
+  pdftitle={XOOP Language Reference},
+  pdfauthor={XOOP Compiler},
+}
+
+% ─── Convenience macros ───────────────────────────────────────────────────────
+\newcommand{\el}[1]{\texttt{\textcolor{xoop-keyword}{<#1>}}}
+\newcommand{\attr}[1]{\texttt{\textcolor{xoop-attr}{#1}}}
+\newcommand{\val}[1]{\texttt{\textcolor{xoop-string}{"#1"}}}
+\newcommand{\cs}[1]{\texttt{#1}}
+\newcommand{\required}{\textcolor{xoop-red}{\textbf{required}}}
+\newcommand{\optional}{\textcolor{xoop-green}{optional}}
+\newcommand{\default}[1]{\textcolor{xoop-green}{default: \texttt{#1}}}
+
+\newenvironment{note}{%
+  \begin{mdframed}[backgroundcolor=xoop-bg,linecolor=xoop-border,
+                   innertopmargin=6pt,innerbottommargin=6pt,
+                   innerleftmargin=10pt,innerrightmargin=6pt]
+  \small\textbf{Note:}\ }{%
+  \end{mdframed}}
+
+% ═════════════════════════════════════════════════════════════════════════════
+\begin{document}
+
+% ─── Title page ───────────────────────────────────────────────────────────────
+\begin{titlepage}
+  \centering
+  \vspace*{3cm}
+  {\fontsize{48}{56}\selectfont\bfseries\color{xoop-blue} XOOP \par}
+  \vspace{0.5em}
+  {\Large\color{xoop-gray} XML Object-Oriented Programming Language \par}
+  \vspace{2em}
+  \rule{0.5\textwidth}{0.8pt} \par
+  \vspace{1.5em}
+  {\large Language Reference \& Compiler Guide \par}
+  \vspace{0.5em}
+  {\normalsize Version 1.0.0 \quad\textbullet\quad April 2026 \par}
+  \vfill
+  {\small Compiled to C\# via the XOOP Compiler. \par}
+  {\small Source: \texttt{.xoop} \quad\textrightarrow\quad \texttt{.cs}}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% ═════════════════════════════════════════════════════════════════════════════
+\section{Introduction}
+
+\textbf{XOOP} (\emph{XML Object-Oriented Programming}) is a source-to-source
+compiled language that uses well-formed XML as its surface syntax.
+A \texttt{.xoop} file is valid XML; the XOOP compiler parses it into an abstract
+syntax tree (AST) and emits idiomatic C\# source code.
+
+The core design goals are:
+
+\begin{enumerate}[nosep]
+  \item \textbf{Toolability} — XML is natively understood by editors, validators,
+        linters, and diff tools with no additional grammar files.
+  \item \textbf{Verbosity as clarity} — every declaration is explicit, making
+        codebases easy to audit programmatically (XSLT, XPath, etc.).
+  \item \textbf{Full OOP parity} — classes, interfaces, enums, inheritance,
+        generics, access modifiers, and async all map cleanly to C\# constructs.
+  \item \textbf{Zero runtime} — the compiler output is plain C\# with no XOOP
+        dependency; compiled programs depend only on the .NET runtime.
+\end{enumerate}
+
+% ─── Architecture overview ────────────────────────────────────────────────────
+\subsection{Compiler Architecture}
+
+The compiler is composed of three layers:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Layer} & \textbf{Class} & \textbf{Responsibility} \\
+\midrule
+Parser  & \cs{XoopParser}    & XML $\rightarrow$ AST (\cs{ProgramNode} tree) \\
+Emitter & \cs{CSharpEmitter} & AST $\rightarrow$ formatted C\# source \\
+Driver  & \cs{XoopCompiler}  & Orchestrates parser $+$ emitter \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{note}
+Method and constructor bodies are written in plain C\# inside
+\texttt{<Body>} elements. CDATA sections (\texttt{<![CDATA[\ \ldots\ ]]>}) are
+strongly recommended to avoid XML escaping issues inside bodies.
+\end{note}
+
+% ═════════════════════════════════════════════════════════════════════════════
+\section{File Structure}
+
+Every XOOP source file must be a valid XML document whose root element is
+\el{XoopProgram}.
+
+\begin{lstlisting}[caption={Minimal XOOP file skeleton}]
+<?xml version="1.0" encoding="utf-8"?>
+<XoopProgram>
+
+  <!-- namespace imports -->
+  <Using namespace="System"/>
+
+  <!-- optional namespace block -->
+  <Namespace name="MyApp">
+    <Class name="Hello">
+      <!-- members... -->
+    </Class>
+  </Namespace>
+
+</XoopProgram>
+\end{lstlisting}
+
+Top-level children of \el{XoopProgram} (in any order):
+
+\begin{itemize}[nosep]
+  \item \el{Using} — namespace import
+  \item \el{Namespace} — logical grouping
+  \item \el{Class} — top-level class (no enclosing namespace)
+  \item \el{Interface} — top-level interface
+  \item \el{Enum} — top-level enum
+\end{itemize}
+
+% ═════════════════════════════════════════════════════════════════════════════
+\section{Element Reference}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\subsection{\el{Using} — Namespace Import}
+
+Emits a \cs{using} directive.
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Attribute & Req? & Description \\
+\midrule
+\attr{namespace} (or \attr{ns}) & \required & The namespace to import \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{lstlisting}[caption={Importing namespaces}]
+<Using namespace="System"/>
+<Using namespace="System.Collections.Generic"/>
+<Using ns="System.Linq"/>
+\end{lstlisting}
+
+Emits:
+\begin{lstlisting}[style=csstyle, numbers=none]
+using System;
+using System.Collections.Generic;
+using System.Linq;
+\end{lstlisting}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\subsection{\el{Namespace}}
+
+Wraps declarations in a C\# \cs{namespace} block.
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Attribute & Req? & Description \\
+\midrule
+\attr{name} & \required & Fully qualified namespace name \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Children: \el{Class}, \el{Interface}, \el{Enum}.
+
+\begin{lstlisting}[caption={Namespace declaration}]
+<Namespace name="MyApp.Services">
+  <Class name="UserService"> ... </Class>
+</Namespace>
+\end{lstlisting}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\subsection{\el{Class}}
+
+Declares a class. Nested \el{Class} and \el{Enum} elements produce nested types.
+
+\begin{center}
+\begin{tabularx}{\linewidth}{llX}
+\toprule
+Attribute & Req? & Description \\
+\midrule
+\attr{name}       & \required & Class name \\
+\attr{access}     & \optional & \val{public} \textbar{} \val{private} \textbar{} \val{internal} \textbar{} \val{protected} \quad \default{public} \\
+\attr{extends}    & \optional & Single base class name \\
+\attr{implements} & \optional & Comma-separated list of interfaces \\
+\attr{generics}   & \optional & Comma-separated generic type parameters (e.g.\ \val{T,U}) \\
+\attr{abstract}   & \optional & \val{true} / \val{false} \quad \default{false} \\
+\attr{sealed}     & \optional & \val{true} / \val{false} \quad \default{false} \\
+\attr{static}     & \optional & \val{true} / \val{false} \quad \default{false} \\
+\attr{partial}    & \optional & \val{true} / \val{false} \quad \default{false} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Children (in recommended declaration order):
+\el{Field}, \el{Property}, \el{Constructor}, \el{Method}, \el{Class}, \el{Enum}.
+
+\begin{lstlisting}[caption={Class with inheritance, interface, and generics}]
+<Class name="Repository"
+       access="public"
+       extends="BaseRepository"
+       implements="IRepository,IDisposable"
+       generics="T">
+
+  <Field name="_context" type="DbContext" access="private" readonly="true"/>
+  <Constructor access="public">
+    <Parameter name="context" type="DbContext"/>
+    <Base><Arg>context</Arg></Base>
+  </Constructor>
+  <Method name="FindById" returnType="T?" access="public">
+    <Parameter name="id" type="int"/>
+    <Body><![CDATA[
+      return _context.Set<T>().Find(id);
+    ]]></Body>
+  </Method>
+
+</Class>
+\end{lstlisting}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\subsection{\el{Interface}}
+
+Declares an interface containing method signatures and property signatures.
+
+\begin{center}
+\begin{tabularx}{\linewidth}{llX}
+\toprule
+Attribute & Req? & Description \\
+\midrule
+\attr{name}    & \required & Interface name \\
+\attr{access}  & \optional & \default{public} \\
+\attr{extends} & \optional & Comma-separated parent interface names \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Children: \el{Method} (signature only, no \el{Body}), \el{Property}
+(with \attr{get} / \attr{set} boolean attributes).
+
+\begin{lstlisting}[caption={Interface declaration}]
+<Interface name="IAnimal" extends="IComparable,IDisposable">
+  <Property name="Name" type="string" get="true" set="false"/>
+  <Method name="Speak"    returnType="void"/>
+  <Method name="GetSound" returnType="string">
+    <Parameter name="loud" type="bool" default="false"/>
+  </Method>
+</Interface>
+\end{lstlisting}
+
+Emits:
+\begin{lstlisting}[style=csstyle, numbers=none]
+public interface IAnimal : IComparable, IDisposable
+{
+    string Name { get; }
+    void Speak();
+    string GetSound(bool loud = false);
+}
+\end{lstlisting}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\subsection{\el{Enum}}
+
+Declares an enumeration.
+
+\begin{center}
+\begin{tabularx}{\linewidth}{llX}
+\toprule
+Attribute & Req? & Description \\
+\midrule
+\attr{name}   & \required & Enum name \\
+\attr{access} & \optional & \default{public} \\
+\attr{type}   & \optional & Underlying numeric type (e.g.\ \val{byte}, \val{int}) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Each member is an \el{Member} element with:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Attribute & Req? & Description \\
+\midrule
+\attr{name}  & \required & Member name \\
+\attr{value} & \optional & Explicit integer value \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{lstlisting}[caption={Enum with explicit values}]
+<Enum name="HttpStatus" type="int">
+  <Member name="OK"                  value="200"/>
+  <Member name="BadRequest"          value="400"/>
+  <Member name="Unauthorized"        value="401"/>
+  <Member name="NotFound"            value="404"/>
+  <Member name="InternalServerError" value="500"/>
+</Enum>
+\end{lstlisting}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\subsection{\el{Field}}
+
+Declares a class-level field.
+
+\begin{center}
+\begin{tabularx}{\linewidth}{llX}
+\toprule
+Attribute & Req? & Description \\
+\midrule
+\attr{name}     & \required & Field name \\
+\attr{type}     & \required & C\# type \\
+\attr{access}   & \optional & \default{private} \\
+\attr{static}   & \optional & \default{false} \\
+\attr{readonly} & \optional & \default{false} \\
+\attr{const}    & \optional & \default{false} — implies \texttt{static} semantics \\
+\attr{default}  & \optional & Initialiser expression (C\# literal or expression) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{lstlisting}[caption={Field examples}]
+<Field name="_id"      type="int"    access="private" readonly="true"/>
+<Field name="_name"    type="string" access="private" readonly="true" default='"unknown"'/>
+<Field name="MaxItems" type="int"    access="public"  const="true" default="100"/>
+<Field name="_count"   type="int"    access="protected" static="true" default="0"/>
+\end{lstlisting}
+
+Emits:
+\begin{lstlisting}[style=csstyle, numbers=none]
+private readonly int _id;
+private readonly string _name = "unknown";
+public const int MaxItems = 100;
+protected static int _count = 0;
+\end{lstlisting}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\subsection{\el{Property}}
+
+XOOP supports three property forms:
+
+\subsubsection{Auto-property (attribute-only)}
+
+\begin{lstlisting}[caption={Auto-property}]
+<Property name="Count" type="int" access="public"
+          setAccess="private" default="0"/>
+\end{lstlisting}
+
+Emits:
+\begin{lstlisting}[style=csstyle, numbers=none]
+public int Count { get; private set; } = 0;
+\end{lstlisting}
+
+\subsubsection{Field-backed property (\attr{fieldRef})}
+
+\begin{lstlisting}[caption={Field-backed read-only property}]
+<Field name="_name" type="string" access="private" readonly="true"/>
+<Property name="Name" type="string" access="public"
+          fieldRef="_name" set="false"/>
+\end{lstlisting}
+
+Emits:
+\begin{lstlisting}[style=csstyle, numbers=none]
+public string Name
+{
+    get => _name;
+}
+\end{lstlisting}
+
+\subsubsection{Custom body (\el{Get} / \el{Set} children)}
+
+\begin{lstlisting}[caption={Property with custom accessors}]
+<Property name="DisplayName" type="string" access="public">
+  <Get><![CDATA[ return _first + " " + _last; ]]></Get>
+  <Set><![CDATA[
+    var parts = value.Split(' ', 2);
+    _first = parts[0];
+    _last  = parts.Length > 1 ? parts[1] : "";
+  ]]></Set>
+</Property>
+\end{lstlisting}
+
+\begin{center}
+\begin{tabularx}{\linewidth}{llX}
+\toprule
+Attribute & Req? & Description \\
+\midrule
+\attr{name}      & \required & Property name \\
+\attr{type}      & \required & C\# type \\
+\attr{access}    & \optional & \default{public} \\
+\attr{setAccess} & \optional & Narrower access for setter (e.g.\ \val{private}) \\
+\attr{get}       & \optional & Include getter? \default{true} \\
+\attr{set}       & \optional & Include setter? \default{true} \\
+\attr{fieldRef}  & \optional & Backing field — generates expression-body accessors \\
+\attr{default}   & \optional & Auto-property initialiser \\
+\attr{static}    & \optional & \default{false} \\
+\attr{virtual}   & \optional & \default{false} \\
+\attr{override}  & \optional & \default{false} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\subsection{\el{Constructor}}
+
+\begin{center}
+\begin{tabularx}{\linewidth}{llX}
+\toprule
+Attribute & Req? & Description \\
+\midrule
+\attr{access} & \optional & \default{public} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Children:
+\begin{itemize}[nosep]
+  \item \el{Parameter} (zero or more)
+  \item \el{Base} — emits \cs{: base(\ldots)}; contains \el{Arg} children
+  \item \el{This} — emits \cs{: this(\ldots)}; contains \el{Arg} children
+  \item \el{Body} — C\# method body
+\end{itemize}
+
+\begin{lstlisting}[caption={Constructor with base call}]
+<Class name="PremiumUser" extends="User">
+  <Constructor access="public">
+    <Parameter name="id"   type="int"/>
+    <Parameter name="name" type="string"/>
+    <Base><Arg>id</Arg><Arg>name</Arg></Base>
+    <Body><![CDATA[
+      IsPremium = true;
+    ]]></Body>
+  </Constructor>
+</Class>
+\end{lstlisting}
+
+Emits:
+\begin{lstlisting}[style=csstyle, numbers=none]
+public PremiumUser(int id, string name) : base(id, name)
+{
+    IsPremium = true;
+}
+\end{lstlisting}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\subsection{\el{Method}}
+
+\begin{center}
+\begin{tabularx}{\linewidth}{llX}
+\toprule
+Attribute & Req? & Description \\
+\midrule
+\attr{name}       & \required & Method name \\
+\attr{returnType} & \optional & \default{void} \\
+\attr{access}     & \optional & \default{public} \\
+\attr{generics}   & \optional & Comma-separated type parameters \\
+\attr{static}     & \optional & \default{false} \\
+\attr{virtual}    & \optional & \default{false} \\
+\attr{override}   & \optional & \default{false} \\
+\attr{abstract}   & \optional & \default{false} — omits body braces, emits \texttt{;} \\
+\attr{sealed}     & \optional & \default{false} \\
+\attr{new}        & \optional & \default{false} — emits \cs{new} modifier \\
+\attr{async}      & \optional & \default{false} — emits \cs{async} modifier \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Children: \el{Parameter} (zero or more), \el{Body}.
+
+\begin{lstlisting}[caption={Method examples}]
+<!-- Abstract method (no body) -->
+<Method name="GetArea" returnType="double" abstract="true"/>
+
+<!-- Virtual method -->
+<Method name="ToString" returnType="string" override="true">
+  <Body><![CDATA[ return $"Point({X}, {Y})"; ]]></Body>
+</Method>
+
+<!-- Generic static method -->
+<Method name="Create" returnType="T" static="true" generics="T"
+        access="public">
+  <Parameter name="args" type="object[]" params="true"/>
+  <Body><![CDATA[
+    return (T)Activator.CreateInstance(typeof(T), args)!;
+  ]]></Body>
+</Method>
+
+<!-- Async method -->
+<Method name="FetchAsync" returnType="Task&lt;string&gt;" async="true">
+  <Parameter name="url" type="string"/>
+  <Body><![CDATA[
+    using var client = new HttpClient();
+    return await client.GetStringAsync(url);
+  ]]></Body>
+</Method>
+\end{lstlisting}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\subsection{\el{Parameter}}
+
+\begin{center}
+\begin{tabularx}{\linewidth}{llX}
+\toprule
+Attribute & Req? & Description \\
+\midrule
+\attr{name}    & \required & Parameter name \\
+\attr{type}    & \required & C\# type \\
+\attr{default} & \optional & Default value expression \\
+\attr{params}  & \optional & \val{true} — prepends \cs{params} keyword \\
+\attr{ref}     & \optional & \val{true} — prepends \cs{ref} keyword \\
+\attr{out}     & \optional & \val{true} — prepends \cs{out} keyword \\
+\attr{in}      & \optional & \val{true} — prepends \cs{in} keyword \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{lstlisting}[caption={Parameter modifiers}]
+<Parameter name="count"  type="int"      default="0"/>
+<Parameter name="values" type="int[]"    params="true"/>
+<Parameter name="result" type="string"   out="true"/>
+<Parameter name="data"   type="byte[]"   ref="true"/>
+\end{lstlisting}
+
+% ═════════════════════════════════════════════════════════════════════════════
+\section{Access Modifiers}
+
+All \attr{access} attributes accept the following values:
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Value & C\# keyword \\
+\midrule
+\val{public}            & \cs{public} \\
+\val{private}           & \cs{private} \\
+\val{protected}         & \cs{protected} \\
+\val{internal}          & \cs{internal} \\
+\val{protected internal}& \cs{protected internal} \\
+\val{private protected} & \cs{private protected} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The default access for class members follows the same convention as C\#:
+fields default to \cs{private}, methods and properties default to \cs{public}.
+
+% ═════════════════════════════════════════════════════════════════════════════
+\section{Boolean Attributes}
+
+Any boolean attribute (\attr{abstract}, \attr{static}, \attr{readonly}, etc.)
+accepts the following truthy/falsy values (case-insensitive):
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Truthy & Falsy \\
+\midrule
+\val{true}, \val{yes}, \val{1} & \val{false}, \val{no}, \val{0} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Omitting a boolean attribute is equivalent to \val{false}.
+
+% ═════════════════════════════════════════════════════════════════════════════
+\section{Method Bodies}
+
+Method, constructor, getter, and setter bodies are written in plain C\# inside
+the \el{Body}, \el{Get}, or \el{Set} elements respectively.
+
+\subsection{CDATA Recommendation}
+
+Wrap body content in a CDATA section to avoid XML escaping interference:
+
+\begin{lstlisting}[caption={Using CDATA for method bodies}]
+<Method name="Print" returnType="void">
+  <Parameter name="value" type="int"/>
+  <Body><![CDATA[
+    if (value > 0)
+        Console.WriteLine($"Positive: {value}");
+    else if (value < 0)
+        Console.WriteLine($"Negative: {value}");
+    else
+        Console.WriteLine("Zero");
+  ]]></Body>
+</Method>
+\end{lstlisting}
+
+\subsection{Without CDATA (XML Escaping Required)}
+
+If CDATA is not used, XML special characters must be escaped:
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Character & XML escape \\
+\midrule
+\texttt{<}  & \texttt{\&lt;} \\
+\texttt{>}  & \texttt{\&gt;} \\
+\texttt{\&} & \texttt{\&amp;} \\
+\texttt{"}  & \texttt{\&quot;} \\
+\texttt{'}  & \texttt{\&apos;} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The emitter automatically strips common leading whitespace (the CDATA indentation
+offset), so bodies can be indented naturally without affecting the emitted code.
+
+% ═════════════════════════════════════════════════════════════════════════════
+\section{Complete Example — Hello World}
+
+\begin{lstlisting}[caption={examples/hello.xoop}]
+<?xml version="1.0" encoding="utf-8"?>
+<XoopProgram>
+
+  <Using namespace="System"/>
+
+  <Namespace name="Hello">
+
+    <Class name="Greeter" access="public">
+
+      <Field name="_greeting" type="string" access="private"
+             readonly="true" default='"Hello"'/>
+
+      <Constructor access="public">
+        <Parameter name="greeting" type="string" default='"Hello"'/>
+        <Body><![CDATA[
+          _greeting = greeting;
+        ]]></Body>
+      </Constructor>
+
+      <Method name="Greet" returnType="void" access="public">
+        <Parameter name="name" type="string"/>
+        <Body><![CDATA[
+          Console.WriteLine($"{_greeting}, {name}!");
+        ]]></Body>
+      </Method>
+
+    </Class>
+
+    <Class name="Program" access="public" static="true">
+      <Method name="Main" returnType="void" access="public" static="true">
+        <Parameter name="args" type="string[]"/>
+        <Body><![CDATA[
+          var greeter = new Greeter();
+          greeter.Greet("World");
+
+          var custom = new Greeter("Howdy");
+          custom.Greet("partner");
+        ]]></Body>
+      </Method>
+    </Class>
+
+  </Namespace>
+
+</XoopProgram>
+\end{lstlisting}
+
+Generated C\# output:
+\begin{lstlisting}[style=csstyle, caption={Generated hello.cs (excerpt)}]
+using System;
+
+namespace Hello
+{
+    public class Greeter
+    {
+        private readonly string _greeting = "Hello";
+
+        public Greeter(string greeting = "Hello")
+        {
+            _greeting = greeting;
+        }
+
+        public void Greet(string name)
+        {
+            Console.WriteLine($"{_greeting}, {name}!");
+        }
+    }
+
+    public static class Program
+    {
+        public static void Main(string[] args)
+        {
+            var greeter = new Greeter();
+            greeter.Greet("World");
+
+            var custom = new Greeter("Howdy");
+            custom.Greet("partner");
+        }
+    }
+}
+\end{lstlisting}
+
+% ═════════════════════════════════════════════════════════════════════════════
+\section{Complete Example — Animal Kingdom (Full OOP Demo)}
+
+This example demonstrates the full OOP feature set: abstract classes,
+interfaces, enums, inheritance chains, field-backed read-only properties,
+virtual/override methods, and constructor chaining.
+
+\begin{lstlisting}[caption={examples/animals.xoop (abridged)}]
+<XoopProgram>
+  <Using namespace="System"/>
+  <Using namespace="System.Collections.Generic"/>
+
+  <Namespace name="AnimalKingdom">
+
+    <Interface name="ISpeakable">
+      <Method name="Speak"    returnType="void"/>
+      <Method name="GetSound" returnType="string"/>
+    </Interface>
+
+    <Enum name="AnimalKind">
+      <Member name="Unknown" value="0"/>
+      <Member name="Dog"/>
+      <Member name="Cat"/>
+      <Member name="Bird"/>
+    </Enum>
+
+    <Class name="Animal" abstract="true" implements="ISpeakable">
+      <Field name="_name"  type="string" access="private"   readonly="true"/>
+      <Field name="_sound" type="string" access="protected"/>
+
+      <Constructor access="public">
+        <Parameter name="name"  type="string"/>
+        <Parameter name="sound" type="string"/>
+        <Body><![CDATA[ _name = name; _sound = sound; ]]></Body>
+      </Constructor>
+
+      <Property name="Name" type="string" fieldRef="_name" set="false"/>
+      <Method name="Kind"   returnType="AnimalKind" abstract="true"/>
+      <Method name="Speak"  returnType="void" virtual="true">
+        <Body><![CDATA[
+          Console.WriteLine($"{_name} says: {_sound}!");
+        ]]></Body>
+      </Method>
+    </Class>
+
+    <Class name="Dog" extends="Animal">
+      <Constructor access="public">
+        <Parameter name="name" type="string"/>
+        <Base><Arg>name</Arg><Arg>"Woof"</Arg></Base>
+      </Constructor>
+      <Method name="Kind" returnType="AnimalKind" override="true">
+        <Body><![CDATA[ return AnimalKind.Dog; ]]></Body>
+      </Method>
+    </Class>
+
+    <!-- Cat and Bird follow the same pattern... -->
+
+  </Namespace>
+</XoopProgram>
+\end{lstlisting}
+
+% ═════════════════════════════════════════════════════════════════════════════
+\section{Using the Compiler}
+
+\subsection{Build}
+
+\begin{verbatim}
+dotnet build
+\end{verbatim}
+
+\subsection{Compile a \texttt{.xoop} file}
+
+\begin{verbatim}
+dotnet run -- <input.xoop> [output.cs]
+\end{verbatim}
+
+If \texttt{output.cs} is omitted, the output file is placed next to the input
+file with the extension changed to \texttt{.cs}.
+
+\subsection{Examples}
+
+\begin{verbatim}
+dotnet run -- examples/hello.xoop
+dotnet run -- examples/animals.xoop out/Animals.cs
+dotnet run -- --help
+dotnet run -- --version
+\end{verbatim}
+
+\subsection{Error Handling}
+
+Compile errors throw \cs{XoopCompileException} with a descriptive message.
+The CLI prints the message in red to \texttt{stderr} and exits with code
+\texttt{1}.
+
+Common errors:
+\begin{itemize}[nosep]
+  \item Malformed XML (unclosed tags, bad encoding, etc.)
+  \item Missing \required\ attributes (\attr{name}, \attr{type}, etc.)
+  \item Root element is not \el{XoopProgram}
+\end{itemize}
+
+% ═════════════════════════════════════════════════════════════════════════════
+\section{Element Quick Reference}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{Element} & \textbf{Key attributes} & \textbf{C\# output} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Element} & \textbf{Key attributes} & \textbf{C\# output} \\
+\midrule
+\endhead
+\el{XoopProgram}  & —                                   & (file root) \\
+\el{Using}        & \attr{namespace}                    & \cs{using \ldots;} \\
+\el{Namespace}    & \attr{name}                         & \cs{namespace \{ \}} \\
+\el{Class}        & \attr{name}, \attr{extends}, \ldots & \cs{class / abstract class / static class} \\
+\el{Interface}    & \attr{name}, \attr{extends}         & \cs{interface} \\
+\el{Enum}         & \attr{name}, \attr{type}            & \cs{enum} \\
+\el{Member}       & \attr{name}, \attr{value}           & enum member \\
+\el{Field}        & \attr{name}, \attr{type}            & field declaration \\
+\el{Property}     & \attr{name}, \attr{type}            & property (auto / backed / custom) \\
+\el{Get}          & (body text)                         & \cs{get \{ \}} \\
+\el{Set}          & (body text)                         & \cs{set \{ \}} \\
+\el{Constructor}  & \attr{access}                       & \cs{ClassName(\ldots) \{ \}} \\
+\el{Base}         & \el{Arg} children                  & \cs{: base(\ldots)} \\
+\el{This}         & \el{Arg} children                  & \cs{: this(\ldots)} \\
+\el{Method}       & \attr{name}, \attr{returnType}      & method declaration \\
+\el{Parameter}    & \attr{name}, \attr{type}            & method/ctor parameter \\
+\el{Body}         & (body text / CDATA)                 & method body \cs{\{ \}} \\
+\el{Arg}          & (text content)                      & argument in \cs{base()}/\cs{this()} \\
+\bottomrule
+\end{longtable}
+
+% ═════════════════════════════════════════════════════════════════════════════
+\section{Design Notes \& Limitations}
+
+\begin{enumerate}
+  \item \textbf{Bodies are opaque C\#.} The compiler does not parse or validate
+        method bodies — they are emitted verbatim (after whitespace normalisation).
+        Type errors will surface at C\# compile time.
+
+  \item \textbf{Generics constraints} (\cs{where T : class}) are not yet
+        supported as first-class attributes; write them directly in the body
+        if needed, or use a comment to document intent.
+
+  \item \textbf{Attributes / annotations} (C\# \cs{[Attribute]}) are not yet
+        supported. A future \el{Annotation} element is planned.
+
+  \item \textbf{Properties with \attr{set=``false''}} emit only a getter.
+        A future \attr{init} accessor will be added for init-only setters.
+
+  \item \textbf{Whitespace normalisation} — the emitter strips the minimum
+        common leading indent from body text so that naturally indented CDATA
+        sections produce correctly indented C\# output.
+
+  \item \textbf{No runtime dependency} — the emitted C\# references only the
+        standard .NET base class library. XOOP itself is a compile-time tool only.
+\end{enumerate}
+
+\vfill
+\begin{center}
+  \small\textcolor{xoop-gray}{XOOP Compiler v1.0.0 \quad\textbullet\quad
+  Generated \today \quad\textbullet\quad
+  Compiles to C\# \textbullet\quad Zero runtime dependency}
+\end{center}
+
+\end{document}
